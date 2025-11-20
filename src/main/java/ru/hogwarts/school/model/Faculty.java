@@ -3,25 +3,32 @@ package ru.hogwarts.school.model;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 
+import java.util.Collection;
 import java.util.Objects;
+
+import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Entity
 public class Faculty {
 
     @Id
-    @GeneratedValue
-    private Long id;
+    @GeneratedValue (strategy = IDENTITY)
+    private Long facultyId;
 
     private String name;
     private String color;
 
+    @OneToMany (mappedBy = "faculty")
+    private Collection<Student> students;
+
     public Long getId() {
-        return id;
+        return facultyId;
     }
 
     public void setId(Long id) {
-        this.id = id;
+        this.facultyId = id;
     }
 
     public String getName() {
@@ -40,21 +47,25 @@ public class Faculty {
         this.color = color;
     }
 
+    public Collection<Student> getStudents() {
+        return students;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof Faculty faculty)) return false;
-        return Objects.equals(id, faculty.id) && Objects.equals(name, faculty.name) && Objects.equals(color, faculty.color);
+        return Objects.equals(facultyId, faculty.facultyId) && Objects.equals(name, faculty.name) && Objects.equals(color, faculty.color);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, color);
+        return Objects.hash(facultyId, name, color);
     }
 
     @Override
     public String toString() {
         return "Faculty{" +
-                "id=" + id +
+                "id=" + facultyId +
                 ", name='" + name + '\'' +
                 ", color='" + color + '\'' +
                 '}';

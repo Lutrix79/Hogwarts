@@ -13,7 +13,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 @RestController
-@RequestMapping("faculty")
+@RequestMapping("/faculty")
 public class FacultyController {
 
     @Autowired
@@ -30,6 +30,14 @@ public class FacultyController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         return ResponseEntity.ok(faculty);
+    }
+
+    @GetMapping("/students/{id}") // GET http://localhost:8080/faculty/students/1
+    public ResponseEntity<Collection<Student>> allStudentsFaculty(@PathVariable Long id) {
+        if (!facultyService.getFaculty(id).getStudents().isEmpty()) {
+            return ResponseEntity.ok(facultyService.getStudentsByFacultyId(id));
+        }
+        return ResponseEntity.ok(Collections.emptyList());
     }
 
     @PostMapping // POST http://localhost:8080/faculty
@@ -55,11 +63,12 @@ public class FacultyController {
     }
 
     @GetMapping
-    public ResponseEntity<Collection<Faculty>> filterFacultyByColor(@RequestParam(required = false) String color) {
-        if (color != null && !color.isBlank()) {
-            return ResponseEntity.ok(facultyService.filterFacultyByColor(color));
+    public ResponseEntity<Faculty> findFacultyByNameOrColorIgnoreCase(@RequestParam(required = false) String name,
+                                                                          @RequestParam(required = false) String color) {
+        if ((color != null && !color.isBlank()) || (name != null && !name.isBlank())) {
+            return ResponseEntity.ok(facultyService.findFacultyByNameOrColorIgnoreCase(name, color));
         }
-        return ResponseEntity.ok(Collections.emptyList());
+       return ResponseEntity.notFound().build();
     }
 
     @GetMapping("/all")

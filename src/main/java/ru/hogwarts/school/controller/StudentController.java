@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.service.StudentService;
 
@@ -12,7 +13,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 @RestController
-@RequestMapping("student")
+@RequestMapping("/student")
 public class StudentController {
 
     @Autowired
@@ -29,6 +30,15 @@ public class StudentController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         return ResponseEntity.ok(student);
+    }
+
+    @GetMapping("/faculty/{id}") // GET http://localhost:8080/student/faculty/1
+    public ResponseEntity<Faculty> getFacultyByStudentId(@PathVariable Long id) {
+        Student student = studentService.getStudent(id);
+        if (student == null || studentService.getFacultyByStudentId(id) == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        return ResponseEntity.ok(studentService.getFacultyByStudentId(id));
     }
 
     @PostMapping // POST http://localhost:8080/student
@@ -54,9 +64,14 @@ public class StudentController {
     }
 
     @GetMapping
-    public ResponseEntity<Collection<Student>> filterStudentsByAge(@RequestParam(required = false) int age) {
+    public ResponseEntity<Collection<Student>> filterStudentsByAgeAndAgeBetween(@RequestParam(required = false) int age,
+                                                                                @RequestParam(required = false) Long minAge,
+                                                                                @RequestParam(required = false) Long maxAge) {
         if (age > 0) {
             return ResponseEntity.ok(studentService.filterStudentsByAge(age));
+        }
+        if (minAge > 0 && maxAge > 0 && maxAge > minAge) {
+            return ResponseEntity.ok(studentService.findByAgeBetween(minAge, maxAge));
         }
         return ResponseEntity.ok(Collections.emptyList());
     }

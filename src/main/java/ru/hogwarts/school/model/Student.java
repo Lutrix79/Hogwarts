@@ -1,34 +1,31 @@
 package ru.hogwarts.school.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.util.Objects;
+
+import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Entity
 public class Student {
 
     @Id
-    @GeneratedValue
-    private Long id;
+    @GeneratedValue (strategy = IDENTITY)
+    private Long studentId;
 
     private String name;
     private int age;
 
-
-    public Student(Long id, String name, int age) {
-        this.id = id;
-        this.name = name;
-        this.age = age;
-    }
+    @ManyToOne (fetch = FetchType.LAZY)
+    @JoinColumn (name = "faculty_id")
+    private Faculty faculty;
 
     public Long getId() {
-        return id;
+        return studentId;
     }
 
     public void setId(Long id) {
-        this.id = id;
+        this.studentId = id;
     }
 
     public String getName() {
@@ -47,21 +44,25 @@ public class Student {
         this.age = age;
     }
 
+    public Faculty getFaculty() {
+        return faculty;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof Student student)) return false;
-        return age == student.age && Objects.equals(id, student.id) && Objects.equals(name, student.name);
+        return age == student.age && Objects.equals(studentId, student.studentId) && Objects.equals(name, student.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, age);
+        return Objects.hash(studentId, name, age);
     }
 
     @Override
     public String toString() {
         return "Student{" +
-                "id=" + id +
+                "id=" + studentId +
                 ", name='" + name + '\'' +
                 ", age=" + age +
                 '}';
