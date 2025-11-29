@@ -13,3 +13,7 @@ where s.age < s.id;
 
 select * from student s
 order by age;
+
+UPDATE student SET version = 0 WHERE version IS NULL;
+
+ALTER TABLE student ADD COLUMN version INTEGER DEFAULT 0;

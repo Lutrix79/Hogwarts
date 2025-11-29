@@ -23,7 +23,7 @@ public class StudentController {
         this.studentService = studentService;
     }
 
-    @GetMapping("{id}") // GET http://localhost:8080/student/1
+    @GetMapping("/{id}") // GET http://localhost:8080/student/1
     public ResponseEntity<Student> getStudentInfo(@PathVariable Long id) {
         Student student = studentService.getStudent(id);
         if (student == null) {
@@ -57,21 +57,25 @@ public class StudentController {
         return ResponseEntity.ok(student);
     }
 
-    @DeleteMapping("{id}") // DELETE http://localhost:8080/student/1
+    @DeleteMapping("/{id}") // DELETE http://localhost:8080/student/1
     public ResponseEntity deleteStudent(@PathVariable Long id) {
         studentService.deleteStudent(id);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping
-    public ResponseEntity<Collection<Student>> filterStudentsByAgeAndAgeBetween(@RequestParam(required = false) int age,
+    public ResponseEntity<Collection<Student>> filterStudentsByAgeAndAgeBetween(@RequestParam(required = false) Integer age,
                                                                                 @RequestParam(required = false) Long minAge,
                                                                                 @RequestParam(required = false) Long maxAge) {
-        if (age > 0) {
-            return ResponseEntity.ok(studentService.filterStudentsByAge(age));
+        if (age != null) {
+            if (age > 0) {
+                return ResponseEntity.ok(studentService.filterStudentsByAge(age));
+            }
         }
-        if (minAge > 0 && maxAge > 0 && maxAge > minAge) {
-            return ResponseEntity.ok(studentService.findByAgeBetween(minAge, maxAge));
+        if (maxAge != null && minAge != null) {
+            if (minAge > 0 && maxAge > 0 && maxAge > minAge) {
+                return ResponseEntity.ok(studentService.findByAgeBetween(minAge, maxAge));
+            }
         }
         return ResponseEntity.ok(Collections.emptyList());
     }
