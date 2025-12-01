@@ -1,12 +1,17 @@
 package ru.hogwarts.school.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 import java.util.Objects;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
+@Table
 public class Student {
 
     @Id
@@ -14,8 +19,9 @@ public class Student {
     private Long studentId;
 
     private String name;
-    private int age;
+    private Integer age;
 
+    @JsonIgnore
     @ManyToOne (fetch = FetchType.LAZY)
     @JoinColumn (name = "faculty_id")
     private Faculty faculty;
@@ -51,7 +57,7 @@ public class Student {
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof Student student)) return false;
-        return age == student.age && Objects.equals(studentId, student.studentId) && Objects.equals(name, student.name);
+        return Objects.equals(age, student.age) && Objects.equals(studentId, student.studentId) && Objects.equals(name, student.name);
     }
 
     @Override

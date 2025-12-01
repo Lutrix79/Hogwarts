@@ -5,10 +5,7 @@ import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.repository.StudentRepository;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -50,7 +47,24 @@ public class StudentService {
         return studentRepository.findByAgeBetween(minAge, maxAge);
     }
 
-    public Faculty getFacultyByStudentId (Long studentId) {
-        return studentRepository.getFacultyByStudentId(studentId);
+//    public Faculty getFacultyByStudentId (Long studentID) {
+//        return studentRepository.getFacultyByStudentId(studentID);
+//    }
+
+    public Faculty getFacultyByStudentId(Long studentId) {
+        Student student = studentRepository.getReferenceById(studentId);
+        return student.getFaculty();
+    }
+
+    public Integer getQuantityOfStudents() {
+        return studentRepository.getQuantityOfStudents();
+    }
+
+    public Float getAverageAgeOfStudents() {
+        return studentRepository.getAverageAgeOfStudents();
+    }
+    
+    public List<Student> getFiveLastStudents() {
+        return studentRepository.getFiveLastStudents();
     }
 }

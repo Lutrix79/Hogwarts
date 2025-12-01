@@ -1,6 +1,7 @@
 package ru.hogwarts.school.controller;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +12,7 @@ import ru.hogwarts.school.service.StudentService;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 @RestController
 @RequestMapping("/student")
@@ -23,7 +25,7 @@ public class StudentController {
         this.studentService = studentService;
     }
 
-    @GetMapping("{id}") // GET http://localhost:8080/student/1
+    @GetMapping("/{id}") // GET http://localhost:8080/student/1
     public ResponseEntity<Student> getStudentInfo(@PathVariable Long id) {
         Student student = studentService.getStudent(id);
         if (student == null) {
@@ -41,6 +43,21 @@ public class StudentController {
         return ResponseEntity.ok(studentService.getFacultyByStudentId(id));
     }
 
+
+//@Operation(summary = "Посмотреть факультет студента")
+//@GetMapping("{id}/faculty")
+//public ResponseEntity<Faculty> getFacultyByStudent(@PathVariable Long id) {
+//    Student student = studentService.findStudent(id);
+//    if (student == null) {
+//        return ResponseEntity.notFound().build();
+//    }
+//    Faculty faculty = student.getFaculty();
+//    if (faculty == null) {
+//        return ResponseEntity.notFound().build();
+//    }
+//    return ResponseEntity.ok(faculty);
+//}
+
     @PostMapping // POST http://localhost:8080/student
     @JsonFormat
     public Student createStudent(@RequestBody Student student) {
@@ -57,21 +74,25 @@ public class StudentController {
         return ResponseEntity.ok(student);
     }
 
-    @DeleteMapping("{id}") // DELETE http://localhost:8080/student/1
+    @DeleteMapping("/{id}") // DELETE http://localhost:8080/student/1
     public ResponseEntity deleteStudent(@PathVariable Long id) {
         studentService.deleteStudent(id);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping
-    public ResponseEntity<Collection<Student>> filterStudentsByAgeAndAgeBetween(@RequestParam(required = false) int age,
+    public ResponseEntity<Collection<Student>> filterStudentsByAgeAndAgeBetween(@RequestParam(required = false) Integer age,
                                                                                 @RequestParam(required = false) Long minAge,
                                                                                 @RequestParam(required = false) Long maxAge) {
-        if (age > 0) {
-            return ResponseEntity.ok(studentService.filterStudentsByAge(age));
+        if (age != null) {
+            if (age > 0) {
+                return ResponseEntity.ok(studentService.filterStudentsByAge(age));
+            }
         }
-        if (minAge > 0 && maxAge > 0 && maxAge > minAge) {
-            return ResponseEntity.ok(studentService.findByAgeBetween(minAge, maxAge));
+        if (maxAge != null && minAge != null) {
+            if (minAge > 0 && maxAge > 0 && maxAge > minAge) {
+                return ResponseEntity.ok(studentService.findByAgeBetween(minAge, maxAge));
+            }
         }
         return ResponseEntity.ok(Collections.emptyList());
     }
@@ -82,5 +103,19 @@ public class StudentController {
             return ResponseEntity.ok(studentService.allStudents());
         }
         return ResponseEntity.ok(Collections.emptyList());
+    }
+    @GetMapping("/total-quantity-students")
+    public Integer getQuantityOfStudents() {
+        return studentService.getQuantityOfStudents();
+    }
+
+    @GetMapping("/average-age-students")
+    public Float getAverageAgeOfStudents() {
+        return studentService.getAverageAgeOfStudents();
+    }
+
+    @GetMapping("/five-last-students")
+    public List<Student> getFiveLastStudents() {
+        return studentService.getFiveLastStudents();
     }
 }
