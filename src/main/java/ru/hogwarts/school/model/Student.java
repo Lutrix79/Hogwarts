@@ -1,5 +1,8 @@
 package ru.hogwarts.school.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
@@ -7,7 +10,9 @@ import java.util.Objects;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
+@Table
 public class Student {
 
     @Id

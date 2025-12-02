@@ -1,6 +1,7 @@
 package ru.hogwarts.school.controller;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +12,7 @@ import ru.hogwarts.school.service.StudentService;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 @RestController
 @RequestMapping("/student")
@@ -40,6 +42,21 @@ public class StudentController {
         }
         return ResponseEntity.ok(studentService.getFacultyByStudentId(id));
     }
+
+
+//@Operation(summary = "Посмотреть факультет студента")
+//@GetMapping("{id}/faculty")
+//public ResponseEntity<Faculty> getFacultyByStudent(@PathVariable Long id) {
+//    Student student = studentService.findStudent(id);
+//    if (student == null) {
+//        return ResponseEntity.notFound().build();
+//    }
+//    Faculty faculty = student.getFaculty();
+//    if (faculty == null) {
+//        return ResponseEntity.notFound().build();
+//    }
+//    return ResponseEntity.ok(faculty);
+//}
 
     @PostMapping // POST http://localhost:8080/student
     @JsonFormat
@@ -86,5 +103,19 @@ public class StudentController {
             return ResponseEntity.ok(studentService.allStudents());
         }
         return ResponseEntity.ok(Collections.emptyList());
+    }
+    @GetMapping("/total-quantity-students")
+    public Integer getQuantityOfStudents() {
+        return studentService.getQuantityOfStudents();
+    }
+
+    @GetMapping("/average-age-students")
+    public Float getAverageAgeOfStudents() {
+        return studentService.getAverageAgeOfStudents();
+    }
+
+    @GetMapping("/five-last-students")
+    public List<Student> getFiveLastStudents() {
+        return studentService.getFiveLastStudents();
     }
 }

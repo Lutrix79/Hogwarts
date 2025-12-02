@@ -7,9 +7,18 @@ import java.util.Objects;
 
 @Entity
 public class Avatar {
+    @Id
+    @GeneratedValue
+    private Long id;
+
     @Lob
     @Column(columnDefinition = "bytea")
     private byte[] data;
+
+
+    private String filePath;
+
+    private long fileSize;
 
     private String filePath;
     private long fileSize;

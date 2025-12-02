@@ -48,8 +48,13 @@ public class FacultyService {
         return facultyRepository.findFacultyByNameOrColorIgnoreCase(name, color);
     }
 
-    public Collection<Student> getStudentsByFacultyId(Long facultyId) {
-        return facultyRepository.getStudentsByFacultyId(facultyId);
-    }
+//    public Collection<Student> getStudentsByFacultyId(Long facultyId) {
+//        return facultyRepository.getStudentsByFacultyId(facultyId);
+//    }
 
+    public Collection<Student> getStudentsByFacultyId(Long facultyId) {
+        return facultyRepository.findById(facultyId)
+                .map(Faculty::getStudents)
+                .orElse(Collections.emptyList());
+    }
 }
