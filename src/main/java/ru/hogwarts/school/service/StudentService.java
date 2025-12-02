@@ -1,5 +1,6 @@
 package ru.hogwarts.school.service;
 
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
@@ -66,5 +67,7 @@ public class StudentService {
     
     public List<Student> getFiveLastStudents() {
         return studentRepository.getFiveLastStudents();
+    public Faculty getFacultyByStudentId (Long studentID) {
+        return studentRepository.getFacultyByStudentId(studentID);
     }
 }

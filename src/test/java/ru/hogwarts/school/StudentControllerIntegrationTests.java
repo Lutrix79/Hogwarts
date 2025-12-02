@@ -72,6 +72,7 @@ class StudentControllerIntegrationTests {
 				String.class
 		);
 		Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);;
+		Assertions.assertThat(response.getStatusCode()).isNotNull();
 	}
 
 	@Test
@@ -80,6 +81,7 @@ class StudentControllerIntegrationTests {
 		Assertions
 				.assertThat(this.restTemplate.exchange("http://localhost:" + port + "/student/" + id, HttpMethod.DELETE, null, String.class).getStatusCode())
 				.isEqualTo(HttpStatus.OK);;
+				.isNotNull();
 	}
 
 	@Test
