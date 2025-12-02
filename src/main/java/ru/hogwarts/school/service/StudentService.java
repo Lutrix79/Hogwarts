@@ -67,7 +67,5 @@ public class StudentService {
     
     public List<Student> getFiveLastStudents() {
         return studentRepository.getFiveLastStudents();
-    public Faculty getFacultyByStudentId (Long studentID) {
-        return studentRepository.getFacultyByStudentId(studentID);
     }
 }

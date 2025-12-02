@@ -62,7 +62,7 @@ public class AvatarController {
         }
     }
     @GetMapping("/avatar-pages")
-    public ResponseEntity<List<Avatar>> getAllExpenses(@RequestParam("page") Integer pageNumber, @RequestParam("size") Integer pageSize) {
+    public ResponseEntity<List<Avatar>> getAllAvatars(@RequestParam("page") Integer pageNumber, @RequestParam("size") Integer pageSize) {
         List<Avatar> expenses = avatarService.getAllAvatars(pageNumber, pageSize);
         return ResponseEntity.ok(expenses);
     }
