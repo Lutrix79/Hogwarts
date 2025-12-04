@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 
 import java.util.Objects;
 
@@ -19,8 +20,11 @@ public class Student {
     @GeneratedValue (strategy = IDENTITY)
     private Long studentId;
 
+    @Column(nullable=false, unique=true)
     private String name;
-    private Integer age;
+
+    @Min(value = 16, message = "Возраст студента не может быть меньше 16 лет")
+    private Integer age = 20;
 
     @JsonIgnore
     @ManyToOne (fetch = FetchType.LAZY)

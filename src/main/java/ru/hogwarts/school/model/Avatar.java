@@ -8,11 +8,11 @@ import java.util.Objects;
 @Entity
 public class Avatar {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "avatar_generator")
+    @SequenceGenerator(name="avatar_generator", sequenceName = "avatar_id_seq", allocationSize=1)
     private Long id;
 
-    @Lob
-    @Column(columnDefinition = "bytea")
+    @Column(name = "data", columnDefinition="bytea")
     private byte[] data;
 
 
@@ -20,16 +20,10 @@ public class Avatar {
 
     private long fileSize;
 
-    private String filePath;
-    private long fileSize;
     private String mediaType;
 
     @OneToOne
     private Student student;
-
-    @Id
-    @GeneratedValue
-    private Long id;
 
     public Student getStudent() {
         return student;
