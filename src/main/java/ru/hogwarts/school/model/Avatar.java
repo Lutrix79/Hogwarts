@@ -20,16 +20,10 @@ public class Avatar {
 
     private long fileSize;
 
-    private String filePath;
-    private long fileSize;
     private String mediaType;
 
     @OneToOne
     private Student student;
-
-    @Id
-    @GeneratedValue
-    private Long id;
 
     public Student getStudent() {
         return student;
