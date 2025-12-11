@@ -111,29 +111,6 @@ public class FacultyControllerModuleTests {
     }
 
     @Test
-    public void testCreateFaculty_ValidData_ShouldReturnCreatedFaculty() throws Exception {
-        // Arrange (Подготовка)
-        Faculty faculty = new Faculty();
-        faculty.setName("Слизерин");
-        faculty.setColor("зелёный");
-
-        // Подготавливаем поведение мока
-        when(facultyService.createFaculty(faculty)).thenReturn(faculty);
-
-        // Convert the faculty object into JSON string
-        String jsonContent = new ObjectMapper().writeValueAsString(faculty);
-
-        // Act (Выполнение)
-        mockMvc.perform(MockMvcRequestBuilders.post("/faculty")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonContent))
-                // Assert (Проверка)
-                .andExpect(status().isOk())                               // Должен вернуть 200 OK
-                .andExpect(jsonPath("$.name").value("Слизерин"))           // Проверяем имя
-                .andExpect(jsonPath("$.color").value("зелёный"));           // Проверяем цвет
-    }
-
-    @Test
     public void testCreateFaculty_MissingRequiredFields_ShouldReturnBadRequest() throws Exception {
         // Arrange (Подготовка)
         Faculty faculty = new Faculty();

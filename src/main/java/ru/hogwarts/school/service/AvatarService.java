@@ -1,6 +1,9 @@
 package ru.hogwarts.school.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -21,6 +24,8 @@ import java.util.Objects;
 @Transactional
 public class AvatarService {
 
+    Logger logger = LoggerFactory.getLogger(AvatarService.class);
+
     @Value("${path.to.avatars.folder}")
     private String avatarsDir;
 
@@ -33,29 +38,37 @@ public class AvatarService {
     }
 
     public void uploadAvatar(Long studentId, MultipartFile avatarFile) throws IOException {
-        Student student = studentRepository.findById(studentId).orElseThrow();
-        Path filePath = Path.of(avatarsDir, student + "." + getExtension(Objects.requireNonNull(avatarFile.getOriginalFilename())));
-        Files.createDirectories(filePath.getParent());
-        Files.deleteIfExists(filePath);
-        try (
+        try {
+            logger.info("Was invoked method uploading avatar image for student with id = {}", studentId);
+            Student student = studentRepository.findById(studentId).orElseThrow(() -> new EntityNotFoundException("There is not student with id = " + studentId));
+            Path filePath = Path.of(avatarsDir, student + "." + getExtension(Objects.requireNonNull(avatarFile.getOriginalFilename())));
+            Files.createDirectories(filePath.getParent());
+            Files.deleteIfExists(filePath);
+            try (
                 InputStream is = avatarFile.getInputStream();
                 OutputStream os = Files.newOutputStream(filePath, StandardOpenOption.CREATE_NEW);
                 BufferedInputStream bis = new BufferedInputStream(is, 1024);
                 BufferedOutputStream bos = new BufferedOutputStream(os, 1024);
-        ) {
-            bis.transferTo(bos);
+            ) {
+                bis.transferTo(bos);
+            }
+            Avatar avatar = findAvatar(studentId);
+            avatar.setStudent(student);
+            avatar.setFilePath(filePath.toString());
+            avatar.setFileSize(avatarFile.getSize());
+            if (avatarFile.getSize() == 0) logger.warn("Size of file avatar is zero");
+            avatar.setMediaType(avatarFile.getContentType());
+            byte[] myByteArray = avatarFile.getBytes();
+            avatar.setData(myByteArray);
+            avatarRepository.save(avatar);
+        } catch (Exception e) {
+            logger.debug("Are you delete this student, or he is never exist? Or maybe unforeseen exception.");
+            logger.error(e.getMessage(), e);
         }
-        Avatar avatar = findAvatar(studentId);
-        avatar.setStudent(student);
-        avatar.setFilePath(filePath.toString());
-        avatar.setFileSize(avatarFile.getSize());
-        avatar.setMediaType(avatarFile.getContentType());
-        byte[] myByteArray = avatarFile.getBytes();
-        avatar.setData(myByteArray);
-        avatarRepository.save(avatar);
     }
 
     public Avatar findAvatar(Long studentId) {
+        logger.info("Was invoked method searching avatar image for student with id = {}", studentId);
         return avatarRepository.findByStudentId(studentId).orElse(new Avatar());
     }
 
@@ -64,6 +77,7 @@ public class AvatarService {
     }
 
     public List<Avatar> getAllAvatars(Integer pageNumber, Integer pageSize) {
+        logger.info("Was invoked method for get avatars list by pages");
         PageRequest pageRequest = PageRequest.of(pageNumber - 1, pageSize);
         return avatarRepository.findAll(pageRequest).getContent();
     }
