@@ -3,10 +3,7 @@ package ru.hogwarts.school.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,6 +13,7 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
+@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "color"})})
 public class Faculty {
 
     @Id

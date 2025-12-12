@@ -11,6 +11,8 @@ import ru.hogwarts.school.service.FacultyService;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/faculty")
@@ -64,11 +66,21 @@ public class FacultyController {
 
     @GetMapping
     public ResponseEntity<Faculty> findFacultyByNameOrColorIgnoreCase(@RequestParam(required = false) String name,
-                                                                          @RequestParam(required = false) String color) {
+                                                                      @RequestParam(required = false) String color) {
         if ((color != null && !color.isBlank()) || (name != null && !name.isBlank())) {
             return ResponseEntity.ok(facultyService.findFacultyByNameOrColorIgnoreCase(name, color));
         }
-       return ResponseEntity.notFound().build();
+        return ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/longest")
+    public ResponseEntity<Optional<Faculty>> findFacultyWithLongestName() {
+        Optional<Faculty> longestFacultyName = facultyService.allFaculties().stream()
+                .max(Comparator.comparingInt(f -> f.getName().length()));
+        if (longestFacultyName.isPresent()) {
+            return ResponseEntity.ok(longestFacultyName);
+        }
+        return ResponseEntity.notFound().build();
     }
 
     @GetMapping("/all")
