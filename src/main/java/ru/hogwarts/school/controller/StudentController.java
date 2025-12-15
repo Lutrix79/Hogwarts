@@ -12,7 +12,10 @@ import ru.hogwarts.school.service.StudentService;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.LongStream;
 
 @RestController
 @RequestMapping("/student")
@@ -104,6 +107,47 @@ public class StudentController {
         }
         return ResponseEntity.ok(Collections.emptyList());
     }
+
+    @GetMapping("/{beginSubstring}")
+    public ResponseEntity<Collection<Student>> allStudentsStartingWithSubstring(@RequestParam String substring) {
+        if (!studentService.allStudents().isEmpty()) {
+            return ResponseEntity.ok(
+                    studentService.allStudents().stream()
+                    .filter(s -> s.getName().toLowerCase().startsWith(substring))
+                    .sorted()
+                    .collect(Collectors.toCollection(() -> Collections.synchronizedCollection(new LinkedHashSet<>())))
+            );
+        }
+        return ResponseEntity.ok(Collections.emptyList());
+    }
+
+    @GetMapping("/average-age-students-by-stream")
+    public double getAverageAgeOfStudentsByStream() {
+        return studentService.allStudents().stream()
+                .mapToInt(Student::getAge)
+                .average()
+                .orElse(0.0);
+    }
+
+    @GetMapping("/parallel")
+    public long getSum() {
+        return LongStream
+                .iterate(1, a -> a + 1)
+                .limit(1_000_000)
+                .parallel()
+                .reduce(0, Long::sum);
+    }
+
+    @GetMapping("/students/print-parallel")
+    public void printParallelAllNamesOfStudents() {
+        studentService.printParallelAllNamesOfStudents();
+    }
+
+    @GetMapping("/students/print-synchronized")
+    public void printSynchronizedAllNamesOfStudents() {
+        studentService.printSynchronizedAllNamesOfStudents();
+    }
+
     @GetMapping("/total-quantity-students")
     public Integer getQuantityOfStudents() {
         return studentService.getQuantityOfStudents();
