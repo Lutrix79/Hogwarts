@@ -138,6 +138,16 @@ public class StudentController {
                 .reduce(0, Long::sum);
     }
 
+    @GetMapping("/students/print-parallel")
+    public void printParallelAllNamesOfStudents() {
+        studentService.printParallelAllNamesOfStudents();
+    }
+
+    @GetMapping("/students/print-synchronized")
+    public void printSynchronizedAllNamesOfStudents() {
+        studentService.printSynchronizedAllNamesOfStudents();
+    }
+
     @GetMapping("/total-quantity-students")
     public Integer getQuantityOfStudents() {
         return studentService.getQuantityOfStudents();

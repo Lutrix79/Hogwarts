@@ -1,6 +1,5 @@
 package ru.hogwarts.school.service;
 
-import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -78,5 +77,45 @@ public class StudentService {
     public List<Student> getFiveLastStudents() {
         logger.info("Was invoked method for get five last student");
         return studentRepository.getFiveLastStudents();
+    }
+
+    public void printParallelAllNamesOfStudents() {
+        List<Student> studentList = studentRepository.findAll().stream().toList();
+        if (studentList.size() < 6) {
+            System.out.println("Добавьте студентов, чтобы их было больше шести");
+        } else {
+            System.out.println(studentList.get(0).getName());
+            System.out.println(studentList.get(1).getName());
+            new Thread(() -> {
+                System.out.println(studentList.get(2).getName());
+                System.out.println(studentList.get(3).getName());
+            }).start();
+            new Thread(() -> {
+                System.out.println(studentList.get(4).getName());
+                System.out.println(studentList.get(5).getName());
+            }).start();
+        }
+    }
+
+    public void printSynchronizedAllNamesOfStudents() {
+        List<Student> studentList = studentRepository.findAll().stream().toList();
+        if (studentList.size() < 6) {
+            System.out.println("Добавьте студентов, чтобы их было больше шести");
+        } else {
+            printSynchro(studentList);
+        }
+    }
+
+    private synchronized void printSynchro(List<Student> studentList) {
+        System.out.println(studentList.get(0).getName());
+        System.out.println(studentList.get(1).getName());
+        new Thread(() -> {
+            System.out.println(studentList.get(2).getName());
+            System.out.println(studentList.get(3).getName());
+        }).start();
+        new Thread(() -> {
+            System.out.println(studentList.get(4).getName());
+            System.out.println(studentList.get(5).getName());
+        }).start();
     }
 }
