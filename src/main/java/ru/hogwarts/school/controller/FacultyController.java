@@ -25,6 +25,9 @@ public class FacultyController {
         this.facultyService = facultyService;
     }
 
+    /**
+     * Getting faculty info by ID
+     */
     @GetMapping("{id}") // GET http://localhost:8080/faculty/1
     public ResponseEntity<Faculty> getFacultyInfo(@PathVariable Long id) {
         Faculty faculty = facultyService.getFaculty(id);
@@ -34,6 +37,9 @@ public class FacultyController {
         return ResponseEntity.ok(faculty);
     }
 
+    /**
+     * Getting collection of students by faculty ID
+     */
     @GetMapping("/students/{id}") // GET http://localhost:8080/faculty/students/1
     public ResponseEntity<Collection<Student>> allStudentsFaculty(@PathVariable Long id) {
         if (!facultyService.getFaculty(id).getStudents().isEmpty()) {
@@ -42,12 +48,18 @@ public class FacultyController {
         return ResponseEntity.ok(Collections.emptyList());
     }
 
+    /**
+     * Create new faculty
+     */
     @PostMapping // POST http://localhost:8080/faculty
     @JsonFormat
     public Faculty createFaculty(@RequestBody Faculty faculty) {
         return facultyService.createFaculty(faculty);
     }
 
+    /**
+     * Edit existing faculty or return flag of bad request if faculty not exist
+     */
     @PutMapping // PUT http://localhost:8080/faculty
     @JsonFormat
     public ResponseEntity<Faculty> editFaculty(@RequestBody Faculty faculty) {
@@ -58,12 +70,18 @@ public class FacultyController {
         return ResponseEntity.ok(faculty);
     }
 
+    /**
+     * Delete existing faculty
+     */
     @DeleteMapping("{id}") // DELETE http://localhost:8080/faculty/1
-    public ResponseEntity deleteFaculty(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteFaculty(@PathVariable Long id) {
         facultyService.deleteFaculty(id);
         return ResponseEntity.ok().build();
     }
 
+    /**
+     * Find Faculty By Name Or Color Ignore Case
+     */
     @GetMapping
     public ResponseEntity<Faculty> findFacultyByNameOrColorIgnoreCase(@RequestParam(required = false) String name,
                                                                       @RequestParam(required = false) String color) {
@@ -73,6 +91,9 @@ public class FacultyController {
         return ResponseEntity.notFound().build();
     }
 
+    /**
+     * Find Faculty With Longest Name
+     */
     @GetMapping("/longest")
     public ResponseEntity<Optional<Faculty>> findFacultyWithLongestName() {
         Optional<Faculty> longestFacultyName = facultyService.allFaculties().stream()
@@ -83,6 +104,9 @@ public class FacultyController {
         return ResponseEntity.notFound().build();
     }
 
+    /**
+     * Return collection of all faculties
+     */
     @GetMapping("/all")
     public ResponseEntity<Collection<Faculty>> allFaculties() {
         if (!facultyService.allFaculties().isEmpty()) {

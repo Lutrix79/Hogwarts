@@ -29,12 +29,18 @@ public class AvatarController {
         this.avatarService = avatarService;
     }
 
+    /**
+     * Upload graphic file of student's avatar from PC to DB
+     */
     @PostMapping(value = "/{studentId}/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> uploadAvatar(@PathVariable Long studentId, @RequestParam MultipartFile avatar) throws IOException {
         avatarService.uploadAvatar(studentId, avatar);
         return ResponseEntity.ok().build();
     }
 
+    /**
+     * Download graphic file of student's avatar from DB
+     */
     @GetMapping(value = "/{id}/avatar-from-db")
     public ResponseEntity<byte[]> downloadAvatar(@PathVariable Long id) {
         Avatar avatar = avatarService.findAvatar(id);
@@ -46,6 +52,9 @@ public class AvatarController {
         return ResponseEntity.status(HttpStatus.OK).headers(headers).body(avatar.getData());
     }
 
+    /**
+     * Download graphic file of student's avatar from PC
+     */
     @GetMapping(value = "/{id}/avatar-from-file")
     public void downloadAvatar(@PathVariable Long id, HttpServletResponse response) throws IOException{
         Avatar avatar = avatarService.findAvatar(id);
@@ -61,6 +70,10 @@ public class AvatarController {
             is.transferTo(os);
         }
     }
+
+    /**
+     * Pagination avatar's table
+     */
     @GetMapping("/avatar-pages")
     public ResponseEntity<List<Avatar>> getAllAvatars(@RequestParam("page") Integer pageNumber, @RequestParam("size") Integer pageSize) {
         List<Avatar> expenses = avatarService.getAllAvatars(pageNumber, pageSize);

@@ -14,6 +14,9 @@ public class InfoController {
     @Autowired
     private InfoService infoService;
 
+    /**
+     * Getting server's port
+     */
     @GetMapping("/port")
     public ResponseEntity<String> getServerPort () {
         return ResponseEntity.ok(infoService.getServerPort());

@@ -9,6 +9,7 @@ import ru.hogwarts.school.repository.StudentRepository;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.LongStream;
 
 @Service
 public class StudentService {
@@ -80,6 +81,7 @@ public class StudentService {
     }
 
     public void printParallelAllNamesOfStudents() {
+        long startTime = System.nanoTime(); //Start of time measurement
         List<Student> studentList = studentRepository.findAll().stream().toList();
         if (studentList.size() < 6) {
             System.out.println("Добавьте студентов, чтобы их было больше шести");
@@ -95,15 +97,22 @@ public class StudentService {
                 System.out.println(studentList.get(5).getName());
             }).start();
         }
+        long endTime = System.nanoTime(); //End of time measurement
+        long fullTimeOfParallel = endTime - startTime; //Execution time in nanos;
+        System.out.println("Execution time of synchronized stream in millis " + (double)fullTimeOfParallel/1_000_000 + " ms");
     }
 
     public void printSynchronizedAllNamesOfStudents() {
+        long startTime = System.nanoTime(); //Start of time measurement
         List<Student> studentList = studentRepository.findAll().stream().toList();
         if (studentList.size() < 6) {
             System.out.println("Добавьте студентов, чтобы их было больше шести");
         } else {
             printSynchro(studentList);
         }
+        long endTime = System.nanoTime(); //End of time measurement
+        long fullTimeOfParallel = endTime - startTime; //Execution time in nanos;
+        System.out.println("Execution time of synchronized stream in millis " + (double)fullTimeOfParallel/1_000_000 + " ms");
     }
 
     private synchronized void printSynchro(List<Student> studentList) {
@@ -117,5 +126,58 @@ public class StudentService {
             System.out.println(studentList.get(4).getName());
             System.out.println(studentList.get(5).getName());
         }).start();
+    }
+
+    public long calculateFastestStream() {
+
+        long startTime = System.nanoTime(); //Start of time measurement
+        long sum = LongStream
+                .iterate(1, a -> a + 1)
+                .limit(1_000_000)
+                .parallel()
+                .reduce(0, Long::sum);
+        long endTime = System.nanoTime(); //End of time measurement
+        long fullTimeOfParallel1 = endTime - startTime; //Execution time in nanos;
+        System.out.println("Execution time of parallel stream 1 in millis " + (double)fullTimeOfParallel1/1_000_000 + " ms");
+
+        startTime = System.nanoTime();
+        sum = LongStream
+                .rangeClosed(1, 1_000_000)
+                .parallel()
+                .sum();
+        endTime = System.nanoTime();
+        long fullTimeOfParallel2 = endTime - startTime;
+        System.out.println("Execution time of parallel stream 2 in millis " + (double)fullTimeOfParallel2/1_000_000 + " ms");
+
+        startTime = System.nanoTime();
+        sum = LongStream.iterate(1, a -> a + 1)
+                .limit(1_000_000)
+                .reduce(0, Long::sum);
+        endTime = System.nanoTime();
+        long fullTimeOfSerial = endTime - startTime;
+        System.out.println("Execution time of serial stream 1 in millis " + (double)fullTimeOfSerial/1_000_000 + " ms");
+
+        long minTime = Math.min(fullTimeOfParallel1, Math.min(fullTimeOfParallel2, fullTimeOfSerial));
+        if (minTime == fullTimeOfParallel1) {
+            System.out.println("""
+                    Fastest way is parallel stream 1: LongStream
+                                    .iterate(1, a -> a + 1)
+                                    .limit(1_000_000)
+                                    .parallel()
+                                    .reduce(0, Long::sum);""");
+        } else if (minTime == fullTimeOfParallel2) {
+            System.out.println("""
+                    Fastest way is parallel stream 2: LongStream
+                                    .rangeClosed(1, 1_000_000)
+                                    .parallel()
+                                    .sum();""");
+        } else {
+            System.out.println("""
+                    Fastest way is serial stream: LongStream.iterate(1, a -> a + 1)
+                                    .limit(1_000_000)
+                                    .reduce(0, Long::sum);""");
+        }
+
+        return sum;
     }
 }

@@ -1,7 +1,6 @@
 package ru.hogwarts.school.controller;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +14,6 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.LongStream;
 
 @RestController
 @RequestMapping("/student")
@@ -28,6 +26,9 @@ public class StudentController {
         this.studentService = studentService;
     }
 
+    /**
+     * Getting student info by ID
+     */
     @GetMapping("/{id}") // GET http://localhost:8080/student/1
     public ResponseEntity<Student> getStudentInfo(@PathVariable Long id) {
         Student student = studentService.getStudent(id);
@@ -37,6 +38,9 @@ public class StudentController {
         return ResponseEntity.ok(student);
     }
 
+    /**
+     * Getting faculty by student's ID
+     */
     @GetMapping("/faculty/{id}") // GET http://localhost:8080/student/faculty/1
     public ResponseEntity<Faculty> getFacultyByStudentId(@PathVariable Long id) {
         Student student = studentService.getStudent(id);
@@ -47,6 +51,9 @@ public class StudentController {
     }
 
 
+    /**
+     * Just my comrade method
+     */
 //@Operation(summary = "Посмотреть факультет студента")
 //@GetMapping("{id}/faculty")
 //public ResponseEntity<Faculty> getFacultyByStudent(@PathVariable Long id) {
@@ -61,12 +68,18 @@ public class StudentController {
 //    return ResponseEntity.ok(faculty);
 //}
 
+    /**
+     * Create student
+     */
     @PostMapping // POST http://localhost:8080/student
     @JsonFormat
     public Student createStudent(@RequestBody Student student) {
         return studentService.createStudent(student);
     }
 
+    /**
+     * Edit existing student or return flag of bad request if student not exist
+     */
     @PutMapping // PUT http://localhost:8080/student
     @JsonFormat
     public ResponseEntity<Student> editStudent(@RequestBody Student student) {
@@ -77,12 +90,18 @@ public class StudentController {
         return ResponseEntity.ok(student);
     }
 
+    /**
+     * Delete student
+     */
     @DeleteMapping("/{id}") // DELETE http://localhost:8080/student/1
-    public ResponseEntity deleteStudent(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteStudent(@PathVariable Long id) {
         studentService.deleteStudent(id);
         return ResponseEntity.ok().build();
     }
 
+    /**
+     * Filter Students By Age And Age Between maxAge and minAge
+     */
     @GetMapping
     public ResponseEntity<Collection<Student>> filterStudentsByAgeAndAgeBetween(@RequestParam(required = false) Integer age,
                                                                                 @RequestParam(required = false) Long minAge,
@@ -100,6 +119,9 @@ public class StudentController {
         return ResponseEntity.ok(Collections.emptyList());
     }
 
+    /**
+     * Return collection of all students
+     */
     @GetMapping("/all")
     public ResponseEntity<Collection<Student>> allStudents() {
         if (!studentService.allStudents().isEmpty()) {
@@ -108,6 +130,9 @@ public class StudentController {
         return ResponseEntity.ok(Collections.emptyList());
     }
 
+    /**
+     * Return all students, whose names began with certain substring
+     */
     @GetMapping("/{beginSubstring}")
     public ResponseEntity<Collection<Student>> allStudentsStartingWithSubstring(@RequestParam String substring) {
         if (!studentService.allStudents().isEmpty()) {
@@ -121,6 +146,9 @@ public class StudentController {
         return ResponseEntity.ok(Collections.emptyList());
     }
 
+    /**
+     * Calculate average age of all students by stream
+     */
     @GetMapping("/average-age-students-by-stream")
     public double getAverageAgeOfStudentsByStream() {
         return studentService.allStudents().stream()
@@ -129,35 +157,49 @@ public class StudentController {
                 .orElse(0.0);
     }
 
+    /**
+     * Calculate sum by parallel and serial streams and find the fastest way
+     */
     @GetMapping("/parallel")
     public long getSum() {
-        return LongStream
-                .iterate(1, a -> a + 1)
-                .limit(1_000_000)
-                .parallel()
-                .reduce(0, Long::sum);
+        return studentService.calculateFastestStream();
     }
 
+    /**
+     * Print name of students, using parallel threads
+     */
     @GetMapping("/students/print-parallel")
     public void printParallelAllNamesOfStudents() {
         studentService.printParallelAllNamesOfStudents();
     }
 
+    /**
+     * Print name of students, using synchronized parallel threads
+     */
     @GetMapping("/students/print-synchronized")
     public void printSynchronizedAllNamesOfStudents() {
         studentService.printSynchronizedAllNamesOfStudents();
     }
 
+    /**
+     * Get quantity of students, using query to DB
+     */
     @GetMapping("/total-quantity-students")
     public Integer getQuantityOfStudents() {
         return studentService.getQuantityOfStudents();
     }
 
+    /**
+     * Get average age of all students, using query to DB
+     */
     @GetMapping("/average-age-students")
     public Float getAverageAgeOfStudents() {
         return studentService.getAverageAgeOfStudents();
     }
 
+    /**
+     * Get five last students, using query to DB
+     */
     @GetMapping("/five-last-students")
     public List<Student> getFiveLastStudents() {
         return studentService.getFiveLastStudents();
